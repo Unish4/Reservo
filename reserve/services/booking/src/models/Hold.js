@@ -47,6 +47,11 @@ const holdSchema = new mongoose.Schema(
       index: true,
     },
     holderToken: { type: String, required: true, select: false },
+    convertedBookingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+      default: null,
+    },
   },
   {
     timestamps: true,
