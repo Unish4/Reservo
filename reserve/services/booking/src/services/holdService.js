@@ -111,3 +111,12 @@ export async function slotIsLocked({
 }) {
   return isLocked({ businessId, resourceId, date, startTime });
 }
+
+export async function markHoldConverted({ holdId, businessId, bookingId }) {
+  const hold = await Hold.findOneAndUpdate(
+    { _id: holdId, businessId, status: "active" },
+    { $set: { status: "converted", convertedBookingId: bookingId } },
+    { new: true },
+  ).lean();
+  return hold;
+}
