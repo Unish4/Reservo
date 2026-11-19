@@ -6,10 +6,7 @@ export function authMiddleware(req, _res, next) {
   const header = req.headers.authorization;
   req.user = null;
 
-  if (!header) {
-    return next();
-  }
-
+  if (!header) return next();
   if (!header.startsWith("Bearer ")) {
     return next(
       new AppError(
@@ -21,12 +18,18 @@ export function authMiddleware(req, _res, next) {
   }
 
   const token = header.slice("Bearer ".length).trim();
-
   try {
-    const payload = jwt.verify(token, ENV.JWT_ACCESS_SECRET);
+    const payload = jwt.verify(token, ENV.JWT_PUBLIC_KEY, {
+      algorithms: ["RS256"],
+      issuer: "reserve.identity",
+      audience: "reserve.api",
+    });
+    if (payload.typ !== "access") {
+      return next(new AppError("Wrong token type", 401, "TOKEN_WRONG_TYPE"));
+    }
     req.user = payload;
     next();
-  } catch (error) {
+  } catch (err) {
     const code =
       err.name === "TokenExpiredError" ? "TOKEN_EXPIRED" : "TOKEN_INVALID";
     next(new AppError("Invalid or expired token", 401, code));
@@ -34,8 +37,7 @@ export function authMiddleware(req, _res, next) {
 }
 
 export function requireAuth(req, _res, next) {
-  if (!req.user) {
+  if (!req.user)
     return next(new AppError("Authentication required", 401, "AUTH_REQUIRED"));
-  }
   next();
 }
