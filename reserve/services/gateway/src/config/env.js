@@ -11,6 +11,7 @@ const REQUIRED = [
   "JWT_PUBLIC_KEY_PATH",
   "IDENTITY_SERVICE_URL",
   "REDIS_URL",
+  "BOOKING_SERVICE_URL"
 ];
 
 const missing = REQUIRED.filter((k) => !process.env[k]);
@@ -37,4 +38,5 @@ export const ENV = Object.freeze({
   IDENTITY_SERVICE_URL: process.env.IDENTITY_SERVICE_URL,
   IS_DEV: process.env.NODE_ENV === "development",
   IS_PROD: process.env.NODE_ENV === "production",
+  BOOKING_SERVICE_URL: process.env.BOOKING_SERVICE_URL,
 });
